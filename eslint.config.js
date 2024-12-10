@@ -40,14 +40,7 @@ export default [
 		},
 	},
 	{
-		ignores: [
-			"build", 
-			".svelte-kit", 
-			"dist", 
-			"*.config.js", 
-			"*.config.ts",
-			"src/lib/shadcn"
-		],
+		ignores: ["build", ".svelte-kit", "dist", "*.config.js", "*.config.ts", "src/lib/shadcn"],
 	},
 	{
 		rules: {
