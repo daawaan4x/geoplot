@@ -6,6 +6,8 @@ export default withNuxt(
 	{
 		rules: {
 			"vue/html-self-closing": "off",
+			// Allow unused arguments and variables when they begin with an underscore
+			"@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
 		},
 	},
 );
