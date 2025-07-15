@@ -102,7 +102,7 @@ export function parseDescription(rawInput: string, params: { ref: [number, numbe
 	try {
 		for (; index < inputs.length; index++) {
 			const tokens = pattern.exec(inputs[index]!);
-			if (!tokens) throw new Error("Cannot recognize input as a Technical Description");
+			if (!tokens) throw new Error("Cannot recognize input as a technical description of lots/surveys");
 			boundary[index] = parseBoundaryVector(tokens);
 		}
 	} catch (error) {

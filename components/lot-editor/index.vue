@@ -1,7 +1,9 @@
 <template>
 	<div class="relative flex h-full w-full flex-col rounded-lg border-2 border-[#d3dae4]">
-		<div class="h-auto w-full px-3 py-2">
+		<div class="flex h-auto w-full flex-row items-center px-4 py-3">
 			<span class="text-xs"> BOUNDARY EDITOR </span>
+			<Icon name="lucide:info" class="text-muted mr-1 ml-3" />
+			<span class="text-muted text-xs"> Visualize technical descriptions of lots/surveys. </span>
 		</div>
 
 		<!-- Editor -->
