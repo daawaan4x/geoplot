@@ -22,6 +22,7 @@
 		"@turf/distance": "^7.2.0",
 		"@vueuse/core": "^13.5.0",
 		"@vueuse/nuxt": "^13.5.0",
+		"codemirror": "^6.0.2",
 		"lodash": "^4.17.21",
 		"nuxt": "^3.17.6",
 		"pixi.js": "^8.11.0",

@@ -8,12 +8,10 @@ import { ArrowBinding } from "./pixi-objects";
 export const EventTick = (panzoomView: PanzoomView, arrowData: ArrowData) => {
 	const arrowsContainer = new ParticleContainer({
 		dynamicProperties: {
-			scale: true,
-			rotation: true,
-			position: true,
 			color: true,
-			uvs: false,
-			vertices: false,
+			position: true,
+			rotation: true,
+			vertex: true,
 		},
 	});
 

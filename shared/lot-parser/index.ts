@@ -22,7 +22,7 @@ export class ParserError extends Error {
 
 export type ParseResults = {
 	boundary: Boundary;
-	area: number | null;
+	area?: number;
 	deviation: string;
 };
 
@@ -91,13 +91,7 @@ function parseBoundaryVector(tokens: RegExpExecArray) {
 	return new BoundaryVector(bearing, distance);
 }
 
-export function parseDescription(
-	rawInput: string,
-	params: {
-		ref: [number, number];
-		area: number;
-	},
-) {
+export function parseDescription(rawInput: string, params: { ref: [number, number] }) {
 	const inputs = rawInput
 		.trim()
 		.split("\n")
@@ -117,7 +111,7 @@ export function parseDescription(
 	}
 
 	const geopolygon = new GeoPolygon(params.ref, boundary);
-	const polygon = new Polygon(boundary.slice(1));
+	const polygon = new Polygon(boundary);
 
 	const results = {
 		boundary: boundary as Boundary,
@@ -125,11 +119,9 @@ export function parseDescription(
 		deviation: toDescription((geopolygon.deviation.degrees / 180) * Math.PI, geopolygon.deviation.magnitude),
 	} as ParseResults;
 
-	if (geopolygon.deviation.magnitude > 1 / 3 || inputs.length < 4) {
-		results.area = null;
+	if (geopolygon.deviation.magnitude > 1 / 3 || inputs.length < 3) {
+		results.area = undefined;
 		throw new ValidationError(results, "The boundary must form an approximately enclosed shape");
-	} else if (Math.abs(polygon.area - params.area) > 1) {
-		throw new ValidationError(results, "The boundary must match the area measured");
 	}
 
 	return results;

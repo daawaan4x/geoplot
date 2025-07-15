@@ -13,9 +13,9 @@ export class GeoPolygon {
 	constructor(ref: [number, number], boundary: Boundary) {
 		const count = boundary.length;
 		const points = (this.points = new Array<[number, number]>(count));
-		let runningSum = ref;
-		for (let index = 0; index < count; index++) {
-			const vector = boundary[index]!;
+		let runningSum = (points[0] = ref);
+		for (let index = 1; index <= count; index++) {
+			const vector = boundary[index - 1]!;
 			const distance = vector.distance;
 			const bearing = vector.bearing.angle.degrees;
 			const transformedBearing = ((-bearing - 90 + 720) % 360) - 180;
@@ -27,7 +27,7 @@ export class GeoPolygon {
 		}
 
 		const startpoint = points[0]!;
-		const endpoint = points[count - 1]!;
+		const endpoint = points[points.length - 1]!;
 
 		this.deviation = {
 			magnitude: distance(startpoint, endpoint, { units: "meters" }),

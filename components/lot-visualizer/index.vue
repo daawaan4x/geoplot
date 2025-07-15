@@ -1,7 +1,6 @@
 <template>
-	<div
-		class="relative flex h-[500px] w-[500px] content-center items-center overflow-hidden rounded-lg border-2 border-[#d3dae4]">
-		<div ref="containerRef" class="h-full w-full overflow-hidden">
+	<div class="h-full w-full overflow-hidden">
+		<div ref="containerRef" class="relative h-full w-full overflow-hidden rounded-lg border-2 border-[#d3dae4]">
 			<canvas ref="canvasRef" class="cursor-grab! active:cursor-grabbing!"></canvas>
 			<canvas
 				ref="minimapRef"
