@@ -10,24 +10,32 @@
 		<div class="h-auto w-full p-4 text-sm">
 			<!-- Area-->
 			<span v-if="area">
-				Area ≈ {{ (area ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }} m²
+				Area ≈
+				<span class="rounded border border-[#ccc] px-1 py-0.5 font-mono font-bold">
+					{{ (area ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }} m²</span
+				>
 			</span>
 
 			<template v-if="area && deviation">
 				&nbsp;
-				<span class="font-thin">|</span>
+				<span class="mx-1 h-full border-r py-1 opacity-50"></span>
 				&nbsp;
 			</template>
 
 			<!-- Deviation -->
-			<span v-if="deviation" :class="{ 'text-error': errorMessage }"> Deviation of endpoints ≈ {{ deviation }} </span>
+			<span v-if="deviation" :class="{ 'text-error': errorMessage }">
+				Deviation of endpoints ≈
+				<span class="rounded border border-[#ccc] px-1 py-0.5 font-mono font-bold">
+					{{ deviation }}
+				</span>
+			</span>
 			<br v-if="(area || deviation) && errorMessage" />
 
 			<!-- Error Message -->
-			<span v-if="errorMessage" style="color: var(--danger)">
+			<span v-if="errorMessage" class="text-error">
 				<span v-if="errorLineNumber >= 0">
-					Line {{ errorLineNumber + 1 }}
-					<span style="font-weight: normal">-</span>
+					<b> Line {{ errorLineNumber + 1 }} </b>
+					<span style="font-weight: normal"> — </span>
 				</span>
 				{{ errorMessage }}
 			</span>
