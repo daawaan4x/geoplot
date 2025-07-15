@@ -6,7 +6,7 @@ export const EventTick = (panzoomView: PanzoomView, props: MinimapProps, drawCal
 	const { size, viewbox } = props;
 
 	return (deltaTime: number) => {
-		const k = Math.pow(0.2, 1 / deltaTime);
+		const k = Math.pow(0.3, 1 / deltaTime);
 
 		if (props.locked) {
 			viewbox.lerp(k);

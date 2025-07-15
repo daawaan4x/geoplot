@@ -54,14 +54,23 @@ export function useMinimap(
 	const canvasContext = canvas.getContext("2d")!;
 	const redraw = () => {
 		if (!canvas.isConnected) return;
+		canvasContext.save();
+		canvasContext.scale(2 * devicePixelRatio, 2 * devicePixelRatio);
 		canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 		canvasContext.fillStyle = "rgba(255, 255, 255, 0.75)";
 		canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-		canvasContext.drawImage(buffer, 0, 0);
 		Viewbox(canvasContext, panzoomView, props);
+		canvasContext.restore();
+		canvasContext.drawImage(buffer, 0, 0);
 	};
 
 	useEventResize(parent, canvases, props, () => {
+		if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+			const scale = 2 * devicePixelRatio;
+			canvas.width = buffer.width = scale * canvas.clientWidth;
+			canvas.height = buffer.height = scale * canvas.clientHeight;
+		}
+
 		refreshBuffer();
 		redraw();
 	});
