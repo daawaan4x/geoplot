@@ -12,7 +12,7 @@ export function useScaleLegend(target: HTMLCanvasElement, panzoom: PanzoomView) 
 	const ticker = (deltaTime: number) => {
 		distance = floorDistance(panzoom.unitPixelRatio().target * maxSize);
 		length.target = distance / panzoom.unitPixelRatio().target;
-		length.lerp(Math.pow(0.2, 1 / deltaTime));
+		length.lerp(Math.pow(0.3, 1 / deltaTime));
 	};
 
 	return {
