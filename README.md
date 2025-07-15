@@ -1,79 +1,28 @@
-# geoplot
+# ⛰️ geoplot
 
-⛰️ overlay surveys on a web map | made with nuxt 🚞
+A website for visualizing technical descriptions of lots/surveys.
 
-# Nuxt Minimal Starter
-
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+<div align="center">
+	<img width="560" src="static/image.png"/>
+</div>
 
 ## Setup
 
-Make sure to install dependencies:
+### Installation
 
-```bash
-# npm
-npm install
+Install the latest _NodeJS_ LTS version from the [official website](https://nodejs.org/en) or through Node Version Manager: [`nvm` for Linux](https://github.com/nvm-sh/nvm), and [`nvm-win` for Windows](https://github.com/coreybutler/nvm-windows).
 
-# pnpm
+Afterwards, install dependencies (preferably `pnpm`) with the following commands:
+
+```
+npm install -g pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+### Development Server
 
-Start the development server on `http://localhost:3000`:
+Start the development server with the following command.
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+pnpm run dev
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
