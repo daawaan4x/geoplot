@@ -24,10 +24,12 @@
 					class="octo-body" />
 			</svg>
 		</a>
+		<Analytics />
 	</UApp>
 </template>
 
 <script setup lang="ts">
+	import { Analytics } from "@vercel/analytics/nuxt";
 	import { useHead } from "#app";
 
 	useHead({

@@ -21,6 +21,7 @@
 		"@turf/bearing": "^7.2.0",
 		"@turf/destination": "^7.2.0",
 		"@turf/distance": "^7.2.0",
+		"@vercel/analytics": "^1.5.0",
 		"@vueuse/core": "^13.5.0",
 		"@vueuse/nuxt": "^13.5.0",
 		"codemirror": "^6.0.2",
