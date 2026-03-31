@@ -15,8 +15,8 @@
 			</blockquote>
 		</nav>
 		<main
-			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_8.75rem] gap-0 overflow-hidden p-0 sm:gap-4 sm:p-8 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-1">
-			<section class="grid min-h-0 grid-cols-1 grid-rows-2 gap-0 sm:gap-4 lg:grid-cols-2 lg:grid-rows-1">
+			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_8.75rem] gap-0 overflow-hidden p-0 sm:gap-2 sm:p-4 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-1 lg:gap-4 lg:p-8">
+			<section class="grid min-h-0 grid-cols-1 grid-rows-2 gap-0 sm:gap-2 lg:grid-cols-2 lg:grid-rows-1 lg:gap-4">
 				<LotVisualizer :boundary="boundary" :active-vector-range="activeLineRange" />
 				<LotEditor
 					:model-value="editorText"
