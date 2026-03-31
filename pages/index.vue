@@ -15,7 +15,7 @@
 			</blockquote>
 		</nav>
 		<main
-			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_8.75rem] gap-0 overflow-hidden p-0 sm:gap-2 sm:p-4 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-1 lg:gap-4 lg:p-8">
+			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_9.75rem] gap-0 overflow-hidden p-0 sm:gap-2 sm:p-4 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-1 lg:gap-4 lg:p-8">
 			<section class="grid min-h-0 grid-cols-1 grid-rows-2 gap-0 sm:gap-2 lg:grid-cols-2 lg:grid-rows-1 lg:gap-4">
 				<LotVisualizer :boundary="boundary" :active-vector-range="activeLineRange" />
 				<LotEditor
@@ -27,7 +27,7 @@
 
 			<aside class="flex min-h-0 flex-col bg-white lg:overflow-hidden">
 				<div
-					class="flex min-h-0 gap-0 overflow-x-auto sm:gap-2 lg:flex-1 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
+					class="flex h-full min-h-0 gap-0 overflow-x-auto sm:gap-2 lg:flex-1 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
 					<BoundarySampleRailTile
 						v-for="sample in boundarySamples"
 						:key="sample.id"
