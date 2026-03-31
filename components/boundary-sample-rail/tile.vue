@@ -28,7 +28,7 @@
 					size="xs"
 					variant="outline"
 					label="Load"
-					class="px-2.5 py-1.5 opacity-0 transition-opacity group-focus-within/sample:opacity-100 group-hover/sample:opacity-100"
+					class="px-2.5 py-1.5 transition-opacity"
 					:disabled="!isPrompt"
 					:tabindex="isPrompt ? 0 : -1"
 					@click="$emit('load', sample)" />

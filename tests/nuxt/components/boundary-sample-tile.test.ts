@@ -43,7 +43,7 @@ function getImmediateLoadButton(wrapper: Awaited<ReturnType<typeof mountBoundary
 }
 
 function getPromptLoadButton(wrapper: Awaited<ReturnType<typeof mountBoundarySampleTile>>) {
-	return wrapper.findAll("button")[1]!;
+	return wrapper.get("[data-testid='prompt-load']");
 }
 
 describe("BoundarySampleRailTile", () => {
