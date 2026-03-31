@@ -50,34 +50,41 @@
 	import { parseDescription, ParserError, ValidationError } from "~/shared/lot-parser";
 	import type { Boundary } from "~/shared/lot-parser";
 	import { basicSetup, EditorView } from "codemirror";
-	import { onMounted, ref } from "vue";
+	import { onMounted, onUnmounted, ref, watch } from "vue";
 
 	const props = withDefaults(
 		defineProps<{
-			template?: string;
+			modelValue?: string;
 		}>(),
 		{
-			template: "",
+			modelValue: "",
 		},
 	);
 
 	const emits = defineEmits<{
+		(event: "update:modelValue", value: string): void;
 		(event: "boundary", value: Boundary): void;
 		(event: "active-line-range", value: { start: number; end: number }): void;
 	}>();
 
-	const containerRef = ref<HTMLTextAreaElement>();
-	const content = ref<string>(props.template);
+	const containerRef = ref<HTMLDivElement>();
+	const content = ref<string>(props.modelValue);
 	const area = ref<number>();
 	const deviation = ref<string>();
 	const errorLineNumber = ref<number>(-1);
 	const errorMessage = ref<string>();
+	const viewRef = ref<EditorView>();
+
+	let syncingFromParent = false;
 
 	onMounted(() => {
 		const container = containerRef.value!;
 
 		const listener = EditorView.updateListener.of((update) => {
-			if (update.docChanged) content.value = update.state.doc.toString();
+			if (update.docChanged) {
+				content.value = update.state.doc.toString();
+				if (!syncingFromParent) emits("update:modelValue", content.value);
+			}
 			if (update.selectionSet) {
 				const range = update.state.selection.ranges[0];
 				emits("active-line-range", {
@@ -93,9 +100,15 @@
 			extensions: [basicSetup, listener],
 		});
 
+		viewRef.value = view;
+
 		watchImmediate([content], ([content]) => {
 			if (!content) {
 				emits("boundary", []);
+				area.value = undefined;
+				deviation.value = undefined;
+				errorLineNumber.value = -1;
+				errorMessage.value = undefined;
 				return;
 			}
 
@@ -126,6 +139,38 @@
 			}
 		});
 	});
+
+	onUnmounted(() => viewRef.value?.destroy());
+
+	watch(
+		() => props.modelValue,
+		(value) => {
+			content.value = value;
+			const view = viewRef.value;
+			if (!view) return;
+
+			const current = view.state.doc.toString();
+			if (value === current) return;
+
+			const { main } = view.state.selection;
+			const nextAnchor = Math.min(main.anchor, value.length);
+			const nextHead = Math.min(main.head, value.length);
+
+			syncingFromParent = true;
+			view.dispatch({
+				changes: {
+					from: 0,
+					to: current.length,
+					insert: value,
+				},
+				selection: {
+					anchor: nextAnchor,
+					head: nextHead,
+				},
+			});
+			syncingFromParent = false;
+		},
+	);
 </script>
 
 <style scoped>

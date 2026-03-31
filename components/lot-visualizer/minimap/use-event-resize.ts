@@ -1,4 +1,3 @@
-import { useResizeObserver } from "@vueuse/core";
 import type { MinimapProps } from "./types";
 
 export function useEventResize(
@@ -6,12 +5,13 @@ export function useEventResize(
 	canvases: HTMLCanvasElement[],
 	props: MinimapProps,
 	callback: () => void,
+	sizeScale = 0.25,
 ) {
 	const { size, viewbox } = props;
 
-	useResizeObserver(parent, () => {
-		const width = parent.clientWidth / 4;
-		const height = parent.clientHeight / 4;
+	const redraw = () => {
+		const width = parent.clientWidth * sizeScale;
+		const height = parent.clientHeight * sizeScale;
 		viewbox.target.x += width / 2 - viewbox.target.x;
 		viewbox.target.y += height / 2 - viewbox.target.y;
 
@@ -25,5 +25,11 @@ export function useEventResize(
 		size.y = height;
 
 		callback();
-	});
+	};
+
+	const observer = new ResizeObserver(redraw);
+	observer.observe(parent);
+	redraw();
+
+	return () => observer.disconnect();
 }

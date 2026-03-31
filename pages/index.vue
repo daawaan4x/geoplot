@@ -1,10 +1,10 @@
 <template>
-	<div class="flex h-dvh min-h-dvh w-dvw min-w-dvw flex-col">
+	<div class="flex h-dvh min-h-dvh w-dvw min-w-dvw flex-col bg-white">
 		<nav class="flex w-full flex-row items-center bg-[var(--ui-bg-inverted)]">
 			<h1 class="flex flex-row px-4 py-3 text-3xl font-extrabold tracking-tight text-white">geoplot</h1>
-			<blockquote class="flex flex-row items-center space-x-2 text-xs opacity-90">
+			<blockquote class="flex flex-row items-center gap-2 text-xs opacity-90">
 				<p class="text-[var(--ui-text-inverted)]">by <i> Theone Genesis Eclarin </i></p>
-				<div class="">
+				<div>
 					<a href="https://github.com/daawaan4x">
 						<img
 							class="rounded border"
@@ -14,35 +14,54 @@
 				</div>
 			</blockquote>
 		</nav>
-		<main class="relative grid w-full grow grid-cols-2 items-center justify-center gap-4 p-4">
-			<LotVisualizer :boundary="boundary" :active-vector-range="activeLineRange" />
-			<LotEditor
-				:template="template"
-				@boundary="(value) => (boundary = value)"
-				@active-line-range="(value) => (activeLineRange = value)" />
+		<main
+			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_10.75rem] gap-4 overflow-hidden p-8 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-[minmax(0,1fr)]">
+			<section class="grid min-h-0 gap-4 lg:grid-cols-2">
+				<LotVisualizer :boundary="boundary" :active-vector-range="activeLineRange" />
+				<LotEditor
+					:model-value="editorText"
+					@update:model-value="handleEditorUpdate"
+					@boundary="(value) => (boundary = value)"
+					@active-line-range="(value) => (activeLineRange = value)" />
+			</section>
+
+			<aside class="flex min-h-0 flex-col rounded-lg bg-white lg:overflow-hidden">
+				<div
+					class="flex min-h-0 gap-2 overflow-x-auto pb-1 lg:flex-1 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0">
+					<BoundarySampleRailTile
+						v-for="sample in boundarySamples"
+						:key="sample.id"
+						:sample="sample"
+						:load="loadMode"
+						class="h-[8.75rem] min-w-[8.75rem] shrink-0 lg:h-auto lg:min-w-0"
+						@load="loadSample" />
+				</div>
+			</aside>
 		</main>
 	</div>
 </template>
 
 <script setup lang="ts">
 	import { LotVisualizer } from "#components";
+	import { boundarySamples } from "~/shared/boundary-samples";
 	import type { Boundary } from "~/shared/lot-parser";
-	import { ref } from "vue";
+	import { computed, ref } from "vue";
 
-	const template = `
-N 45d 12' E, 12.35 m
-S 44d 50' E, 7.92 m
-S 89d 15' E, 5.47 m
-S 46d 5' E, 9.88 m
-S 1d 35' W, 6.30 m
-S 43d 45' W, 11.72 m
-N 89d 50' W, 6.91 m
-N 42d 55' W, 8.41 m
-N 3d 15' E, 7.08 m
-N 44d 10' W, 5.64 m
-N 60d 0' W, 3 m
-	`.trim();
-
+	const initialSample = boundarySamples[0]!;
+	const editorText = ref(initialSample.description);
 	const boundary = ref<Boundary>([]);
 	const activeLineRange = ref<{ start: number; end: number }>();
+	const source = ref<"sample" | "editor">("sample");
+
+	const loadMode = computed(() => (source.value === "sample" ? "immediate" : "prompt"));
+
+	function loadSample(sample: (typeof boundarySamples)[number]) {
+		editorText.value = sample.description;
+		source.value = "sample";
+	}
+
+	function handleEditorUpdate(value: string) {
+		editorText.value = value;
+		source.value = "editor";
+	}
 </script>
