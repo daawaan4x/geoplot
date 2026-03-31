@@ -6,6 +6,7 @@ import { ScaleBarBinding } from "./pixi-objects";
 
 export const useScaleBar = (canvas: HTMLCanvasElement, legend: ScaleLegend) => {
 	const binding = ScaleBarBinding();
+	const horizontalOffset = 48;
 
 	const container = new Container();
 	container.addChild(binding.graphicsBar, binding.textLabel);
@@ -14,7 +15,10 @@ export const useScaleBar = (canvas: HTMLCanvasElement, legend: ScaleLegend) => {
 		init(app: Application) {
 			app.stage.addChild(container);
 			app.ticker.add(() => binding.tick(legend.distance(), legend.length.current()));
-			useResizeObserver(canvas, () => (container.position.y = canvas.clientHeight - 16));
+			useResizeObserver(canvas, () => {
+				container.position.x = horizontalOffset;
+				container.position.y = canvas.clientHeight - 16;
+			});
 		},
 	};
 };

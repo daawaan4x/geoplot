@@ -3,6 +3,10 @@
 		<div
 			ref="containerRef"
 			class="relative h-full w-full overflow-hidden rounded-none border-1 border-[#d3dae4] sm:rounded-lg sm:border-2">
+			<div class="pointer-events-none absolute inset-0 z-10">
+				<LotVisualizerZoomControls @zoom-in="panzoomRef?.zoomByStep(1)" @zoom-out="panzoomRef?.zoomByStep(-1)" />
+			</div>
+
 			<canvas ref="canvasRef" class="cursor-grab! touch-none active:cursor-grabbing!"></canvas>
 			<canvas
 				ref="minimapRef"
@@ -15,6 +19,8 @@
 	import { useResizeObserver, watchImmediate } from "@vueuse/core";
 	import type { Boundary } from "~/shared/lot-parser";
 	import { computed, onMounted, onUnmounted, ref } from "vue";
+	import LotVisualizerZoomControls from "../zoom-controls.vue";
+	import type { PanzoomView } from "./panzoom";
 	import { usePixiMainApp } from "./pixi-main-app";
 	import { useArrows } from "./use-arrows";
 
@@ -32,6 +38,7 @@
 	const containerRef = ref<HTMLElement>();
 	const canvasRef = ref<HTMLCanvasElement>();
 	const minimapRef = ref<HTMLCanvasElement>();
+	const panzoomRef = ref<PanzoomView>();
 
 	onMounted(async () => {
 		const container = containerRef.value!;
@@ -53,6 +60,7 @@
 		});
 
 		const app = usePixiMainApp({ container, canvas, minimap });
+		panzoomRef.value = app.panzoom;
 
 		onUnmounted(() => {
 			try {

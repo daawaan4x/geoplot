@@ -1,5 +1,6 @@
 import { onBeforeUnmount } from "vue";
-import type { PanzoomComputes, PanzoomProps } from "./types";
+import type { PanzoomProps } from "./types";
+import type { createZoomController } from "./zoom-controller";
 
 type PointerState = {
 	clientX: number;
@@ -8,8 +9,12 @@ type PointerState = {
 	localY: number;
 };
 
-export function useEventDrag(target: HTMLElement, props: PanzoomProps, computes: PanzoomComputes) {
-	const { pan, velocity, size, zoom, shift } = props;
+export function useEventDrag(
+	target: HTMLElement,
+	props: PanzoomProps,
+	zoomController: Pick<ReturnType<typeof createZoomController>, "zoomByFactor">,
+) {
+	const { pan, velocity } = props;
 	// Keep one source of truth for every active pointer so drag and pinch use the same coordinates.
 	const pointers = new Map<number, PointerState>();
 
@@ -39,24 +44,6 @@ export function useEventDrag(target: HTMLElement, props: PanzoomProps, computes:
 			},
 			distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
 		};
-	}
-
-	// Re-anchor zoom around the pinch center so the gesture feels attached to the fingers.
-	function zoomAt(focusX: number, focusY: number, scaleFactor: number) {
-		if (!Number.isFinite(scaleFactor) || scaleFactor <= 0) return;
-
-		const longerSide = Math.max(size.x, size.y);
-		const maxZoom = (longerSide * 0.25) / props.minEdge.magnitude;
-		const nextZoom = Math.min(maxZoom, Math.max(1, zoom.target * scaleFactor));
-
-		if (nextZoom === zoom.target) return;
-
-		const appliedScale = nextZoom / zoom.target;
-		const translate = computes.translate().target;
-
-		shift.target.x += (1 - appliedScale) * (focusX - translate.x);
-		shift.target.y += (1 - appliedScale) * (focusY - translate.y);
-		zoom.target = nextZoom;
 	}
 
 	function resetPinchState() {
@@ -135,7 +122,7 @@ export function useEventDrag(target: HTMLElement, props: PanzoomProps, computes:
 			}
 
 			if (lastPinchDistance > 0 && pinch.distance > 0) {
-				zoomAt(pinch.center.x, pinch.center.y, pinch.distance / lastPinchDistance);
+				zoomController.zoomByFactor(pinch.center.x, pinch.center.y, pinch.distance / lastPinchDistance);
 			}
 
 			lastPinchCenter = pinch.center;
