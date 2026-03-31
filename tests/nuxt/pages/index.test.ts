@@ -1,5 +1,6 @@
 import { mockComponent, mountSuspended } from "@nuxt/test-utils/runtime";
 import { boundarySamples } from "~/shared/boundary-samples";
+import { fromBoundaryToDescription } from "~/shared/lot-parser";
 import { defineComponent, h } from "vue";
 import { describe, expect, it } from "vitest";
 import { createHomePageDriver } from "../../support/page-objects/home-page";
@@ -118,7 +119,7 @@ describe("pages/index", () => {
 		const page = createHomePageDriver(wrapper);
 
 		expect(page.sampleLoadMode()).toBe("immediate");
-		expect(page.editorModel()).toBe(boundarySamples[0]?.description);
+		expect(page.editorModel()).toBe(fromBoundaryToDescription(boundarySamples[0]!.boundary));
 
 		await page.clickEditorUpdate();
 		expect(page.sampleLoadMode()).toBe("prompt");
@@ -126,7 +127,7 @@ describe("pages/index", () => {
 
 		await page.getSampleTiles()[1]!.trigger("click");
 		expect(page.sampleLoadMode()).toBe("immediate");
-		expect(page.editorModel()).toBe(boundarySamples[1]?.description);
+		expect(page.editorModel()).toBe(fromBoundaryToDescription(boundarySamples[1]!.boundary));
 	});
 
 	it("forwards boundary and selection updates to the visualizer", async () => {

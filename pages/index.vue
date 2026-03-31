@@ -44,19 +44,21 @@
 <script setup lang="ts">
 	import { LotVisualizer } from "#components";
 	import { boundarySamples } from "~/shared/boundary-samples";
+	import { fromBoundaryToDescription } from "~/shared/lot-parser";
 	import type { Boundary } from "~/shared/lot-parser";
 	import { computed, ref } from "vue";
 
 	const initialSample = boundarySamples[0]!;
-	const editorText = ref(initialSample.description);
-	const boundary = ref<Boundary>([]);
+	const editorText = ref(fromBoundaryToDescription(initialSample.boundary));
+	const boundary = ref<Boundary>(initialSample.boundary);
 	const activeLineRange = ref<{ start: number; end: number }>();
 	const source = ref<"sample" | "editor">("sample");
 
 	const loadMode = computed(() => (source.value === "sample" ? "immediate" : "prompt"));
 
 	function loadSample(sample: (typeof boundarySamples)[number]) {
-		editorText.value = sample.description;
+		editorText.value = fromBoundaryToDescription(sample.boundary);
+		boundary.value = sample.boundary;
 		source.value = "sample";
 	}
 

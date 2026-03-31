@@ -54,7 +54,7 @@ describe("BoundarySampleRailTile", () => {
 		cleanupSpy.mockReset();
 		renderStaticMinimap.mockReset();
 		renderStaticMinimap.mockImplementation(
-			(_parent: HTMLElement, _canvas: HTMLCanvasElement, _description: string) => cleanupSpy,
+			(_parent: HTMLElement, _canvas: HTMLCanvasElement, _boundary: unknown) => cleanupSpy,
 		);
 	});
 
@@ -64,7 +64,7 @@ describe("BoundarySampleRailTile", () => {
 		expect(renderStaticMinimap).toHaveBeenCalledTimes(1);
 		const firstCall = renderStaticMinimap.mock.calls[0];
 		expect(firstCall).toBeDefined();
-		expect(firstCall?.[2]).toBe(boundarySamples[0]?.description);
+		expect(firstCall?.[2]).toBe(boundarySamples[0]?.boundary);
 
 		wrapper.unmount();
 		expect(cleanupSpy).toHaveBeenCalledTimes(1);

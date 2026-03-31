@@ -1,4 +1,4 @@
-import { parseDescription } from "~/shared/lot-parser";
+import { parseDescription, type Boundary } from "~/shared/lot-parser";
 import type { Application } from "pixi.js";
 import type { Arrow, ArrowData } from "../arrows";
 import { ArrowData as ArrowDataStore } from "../arrows";
@@ -124,8 +124,7 @@ export function useMinimap(
 	} as MinimapView;
 }
 
-export function renderStaticMinimap(parent: HTMLElement, canvas: HTMLCanvasElement, description: string) {
-	const { boundary } = parseDescription(description, { ref: [0, 0] });
+export function renderStaticMinimap(parent: HTMLElement, canvas: HTMLCanvasElement, boundary: Boundary) {
 	const arrowData = new ArrowDataStore();
 
 	const minimap = useMinimap(parent, canvas, undefined, arrowData, {

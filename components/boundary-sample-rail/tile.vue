@@ -67,7 +67,7 @@
 
 	onMounted(() => {
 		if (!canvasRef.value || !thumbnailRef.value) return;
-		cleanup = renderStaticMinimap(thumbnailRef.value.parentElement!, canvasRef.value, props.sample.description);
+		cleanup = renderStaticMinimap(thumbnailRef.value.parentElement!, canvasRef.value, props.sample.boundary);
 	});
 
 	onUnmounted(() => cleanup?.());

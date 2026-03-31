@@ -1,3 +1,6 @@
+import geoBearing from "@turf/bearing";
+import geoDestination from "@turf/destination";
+import geoDistance from "@turf/distance";
 import type { Direction, Quadrant } from "./bearing";
 import { Bearing } from "./bearing";
 import type { Boundary } from "./boundary";
@@ -91,6 +94,33 @@ function parseBoundaryVector(tokens: RegExpExecArray) {
 	return new BoundaryVector(bearing, distance);
 }
 
+function toBoundaryVector(radians: number, distance: number) {
+	const tokens = pattern.exec(toDescription(radians, distance));
+	if (!tokens) throw new Error("Cannot serialize input as a boundary vector");
+	return parseBoundaryVector(tokens);
+}
+
+function findClosingBoundaryVector(x: number, y: number) {
+	const targetRadians = Math.atan2(-y, -x);
+	const targetDistance = Math.hypot(x, y);
+	let best = toBoundaryVector(targetRadians, targetDistance);
+	let bestResidual = Math.hypot(x + best.x, y + best.y);
+
+	const minuteStep = Math.PI / (180 * 60);
+	for (let angleOffset = -2; angleOffset <= 2; angleOffset++) {
+		for (let distanceOffset = -2; distanceOffset <= 2; distanceOffset++) {
+			const candidate = toBoundaryVector(targetRadians + angleOffset * minuteStep, targetDistance + distanceOffset / 100);
+			const residual = Math.hypot(x + candidate.x, y + candidate.y);
+			if (residual < bestResidual) {
+				best = candidate;
+				bestResidual = residual;
+			}
+		}
+	}
+
+	return best;
+}
+
 export function parseDescription(rawInput: string, params: { ref: [number, number] }) {
 	const inputs = rawInput
 		.trim()
@@ -125,4 +155,50 @@ export function parseDescription(rawInput: string, params: { ref: [number, numbe
 	}
 
 	return results;
+}
+
+export function fromBoundaryToDescription(boundary: Boundary) {
+	return boundary.map((vector) => toDescription(vector.bearing.angle.radians, vector.distance)).join("\n");
+}
+
+export function fromGeoPolygonToBoundary(points: [number, number][]) {
+	const count = points.length;
+	if (count < 2) return [];
+
+	const ref = points[0]!;
+	let boundaryCount = count;
+	const lastPoint = points[count - 1]!;
+	if (count > 2 && lastPoint[0] === ref[0] && lastPoint[1] === ref[1]) {
+		boundaryCount--;
+	}
+
+	if (boundaryCount < 2) return [];
+
+	const boundary = new Array<BoundaryVector>(boundaryCount);
+	let start = ref;
+	let x = 0;
+	let y = 0;
+	for (let index = 0; index < boundaryCount; index++) {
+		const target = index === boundaryCount - 1 ? ref : points[index + 1]!;
+		let vector: BoundaryVector;
+		if (index === boundaryCount - 1) {
+			vector = findClosingBoundaryVector(x, y);
+		} else {
+			const degrees = ((90 - geoBearing(start, target) + 540) % 360) - 180;
+			const radians = (degrees / 180) * Math.PI;
+			vector = toBoundaryVector(radians, geoDistance(start, target, { units: "meters" }));
+		}
+
+		boundary[index] = vector;
+		x += vector.x;
+		y += vector.y;
+
+		// Advance from the rounded vector so each segment corrects prior serialization drift.
+		const transformedBearing = ((-vector.bearing.angle.degrees - 90 + 720) % 360) - 180;
+		start = geoDestination(start, vector.distance, transformedBearing, {
+			units: "meters",
+		}).geometry.coordinates as [number, number];
+	}
+
+	return boundary as Boundary;
 }
