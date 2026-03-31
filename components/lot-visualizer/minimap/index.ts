@@ -1,4 +1,5 @@
-import { parseDescription, type Boundary } from "~/shared/lot-parser";
+import { parseDescription } from "~/shared/lot-parser";
+import type { Boundary } from "~/shared/lot-parser";
 import type { Application } from "pixi.js";
 import type { Arrow, ArrowData } from "../arrows";
 import { ArrowData as ArrowDataStore } from "../arrows";

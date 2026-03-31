@@ -8,25 +8,22 @@ vi.mock("~/components/lot-visualizer/minimap", () => ({
 	renderStaticMinimap: vi.fn(() => vi.fn()),
 }));
 
-mockComponent(
-	"UButton",
-	{
-		props: {
-			label: {
-				type: String,
-				default: "Load",
-			},
-			disabled: Boolean,
-			tabindex: {
-				type: [Number, String],
-				default: 0,
-			},
+mockComponent("UButton", {
+	props: {
+		label: {
+			type: String,
+			default: "Load",
 		},
-		emits: ["click"],
-		template:
-			"<button type='button' data-testid='prompt-load' :disabled='disabled' :tabindex='tabindex' @click=\"$emit('click')\">{{ label }}</button>",
-	} as never,
-);
+		disabled: Boolean,
+		tabindex: {
+			type: [Number, String],
+			default: 0,
+		},
+	},
+	emits: ["click"],
+	template:
+		"<button type='button' data-testid='prompt-load' :disabled='disabled' :tabindex='tabindex' @click=\"$emit('click')\">{{ label }}</button>",
+} as never);
 
 const BoundarySampleRailTile = (await import("~/components/boundary-sample-rail/tile.vue")).default;
 const minimapModule = await import("~/components/lot-visualizer/minimap");

@@ -23,55 +23,58 @@ UApp
 
 ```vue [layouts/dashboard.vue]
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+	import type { NavigationMenuItem } from "@nuxt/ui";
 
-const items = computed<NavigationMenuItem[]>(() => [{
-  label: 'Home',
-  icon: 'i-lucide-house',
-  to: '/dashboard'
-}, {
-  label: 'Inbox',
-  icon: 'i-lucide-inbox',
-  to: '/dashboard/inbox'
-}, {
-  label: 'Users',
-  icon: 'i-lucide-users',
-  to: '/dashboard/users'
-}, {
-  label: 'Settings',
-  icon: 'i-lucide-settings',
-  to: '/dashboard/settings'
-}])
+	const items = computed<NavigationMenuItem[]>(() => [
+		{
+			label: "Home",
+			icon: "i-lucide-house",
+			to: "/dashboard",
+		},
+		{
+			label: "Inbox",
+			icon: "i-lucide-inbox",
+			to: "/dashboard/inbox",
+		},
+		{
+			label: "Users",
+			icon: "i-lucide-users",
+			to: "/dashboard/users",
+		},
+		{
+			label: "Settings",
+			icon: "i-lucide-settings",
+			to: "/dashboard/settings",
+		},
+	]);
 </script>
 
 <template>
-  <UDashboardGroup>
-    <UDashboardSidebar collapsible resizable>
-      <template #header="{ collapsed }">
-        <UDashboardSearchButton :collapsed="collapsed" />
-      </template>
+	<UDashboardGroup>
+		<UDashboardSidebar collapsible resizable>
+			<template #header="{ collapsed }">
+				<UDashboardSearchButton :collapsed="collapsed" />
+			</template>
 
-      <template #default="{ collapsed }">
-        <UNavigationMenu
-          :items="items"
-          orientation="vertical"
-          :ui="{ link: collapsed ? 'justify-center' : undefined }"
-        />
-      </template>
+			<template #default="{ collapsed }">
+				<UNavigationMenu
+					:items="items"
+					orientation="vertical"
+					:ui="{ link: collapsed ? 'justify-center' : undefined }" />
+			</template>
 
-      <template #footer="{ collapsed }">
-        <UButton
-          :icon="collapsed ? 'i-lucide-log-out' : undefined"
-          :label="collapsed ? undefined : 'Sign out'"
-          color="neutral"
-          variant="ghost"
-          block
-        />
-      </template>
-    </UDashboardSidebar>
+			<template #footer="{ collapsed }">
+				<UButton
+					:icon="collapsed ? 'i-lucide-log-out' : undefined"
+					:label="collapsed ? undefined : 'Sign out'"
+					color="neutral"
+					variant="ghost"
+					block />
+			</template>
+		</UDashboardSidebar>
 
-    <slot />
-  </UDashboardGroup>
+		<slot />
+	</UDashboardGroup>
 </template>
 ```
 
@@ -79,23 +82,23 @@ const items = computed<NavigationMenuItem[]>(() => [{
 
 ```vue [pages/dashboard/index.vue]
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard' })
+	definePageMeta({ layout: "dashboard" });
 </script>
 
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Home">
-        <template #right>
-          <UButton icon="i-lucide-plus" label="New" />
-        </template>
-      </UDashboardNavbar>
-    </template>
+	<UDashboardPanel>
+		<template #header>
+			<UDashboardNavbar title="Home">
+				<template #right>
+					<UButton icon="i-lucide-plus" label="New" />
+				</template>
+			</UDashboardNavbar>
+		</template>
 
-    <template #body>
-      <!-- Page content -->
-    </template>
-  </UDashboardPanel>
+		<template #body>
+			<!-- Page content -->
+		</template>
+	</UDashboardPanel>
 </template>
 ```
 
@@ -105,22 +108,22 @@ definePageMeta({ layout: 'dashboard' })
 
 Root layout wrapper. Manages sidebar state and persistence.
 
-| Prop | Default | Description |
-|---|---|---|
-| `storage` | `'cookie'` | State persistence: `'cookie'`, `'localStorage'`, `false` |
-| `storage-key` | `'dashboard'` | Storage key name |
-| `unit` | `'percentages'` | Size unit: `'percentages'` or `'pixels'` |
+| Prop          | Default         | Description                                              |
+| ------------- | --------------- | -------------------------------------------------------- |
+| `storage`     | `'cookie'`      | State persistence: `'cookie'`, `'localStorage'`, `false` |
+| `storage-key` | `'dashboard'`   | Storage key name                                         |
+| `unit`        | `'percentages'` | Size unit: `'percentages'` or `'pixels'`                 |
 
 ### DashboardSidebar
 
 Resizable, collapsible sidebar. Must be inside `DashboardGroup`.
 
-| Prop | Default | Description |
-|---|---|---|
-| `resizable` | `false` | Enable resize by dragging |
-| `collapsible` | `false` | Enable collapse when dragged to edge |
-| `side` | `'left'` | `'left'` or `'right'` |
-| `mode` | `'slideover'` | Mobile menu mode: `'modal'`, `'slideover'`, `'drawer'` |
+| Prop          | Default       | Description                                            |
+| ------------- | ------------- | ------------------------------------------------------ |
+| `resizable`   | `false`       | Enable resize by dragging                              |
+| `collapsible` | `false`       | Enable collapse when dragged to edge                   |
+| `side`        | `'left'`      | `'left'` or `'right'`                                  |
+| `mode`        | `'slideover'` | Mobile menu mode: `'modal'`, `'slideover'`, `'drawer'` |
 
 Slots receive `{ collapsed }` prop. Control state: `v-model:collapsed`, `v-model:open` (mobile).
 
@@ -128,10 +131,10 @@ Slots receive `{ collapsed }` prop. Control state: `v-model:collapsed`, `v-model
 
 Content panel with `#header`, `#body` (scrollable), `#footer`, and `#default` (raw) slots.
 
-| Prop | Default | Description |
-|---|---|---|
-| `id` | `—` | Unique ID (required for multi-panel) |
-| `resizable` | `false` | Enable resize by dragging |
+| Prop        | Default | Description                          |
+| ----------- | ------- | ------------------------------------ |
+| `id`        | `—`     | Unique ID (required for multi-panel) |
+| `resizable` | `false` | Enable resize by dragging            |
 
 ### DashboardNavbar / DashboardToolbar
 
@@ -141,27 +144,27 @@ Navbar has `#left`, `#default`, `#right` slots and a `title` prop. Toolbar has t
 
 ```vue [pages/dashboard/inbox.vue]
 <script setup lang="ts">
-definePageMeta({ layout: 'dashboard' })
+	definePageMeta({ layout: "dashboard" });
 </script>
 
 <template>
-  <UDashboardPanel id="inbox-list" resizable>
-    <template #header>
-      <UDashboardNavbar title="Inbox" />
-    </template>
-    <template #body>
-      <!-- Email list -->
-    </template>
-  </UDashboardPanel>
+	<UDashboardPanel id="inbox-list" resizable>
+		<template #header>
+			<UDashboardNavbar title="Inbox" />
+		</template>
+		<template #body>
+			<!-- Email list -->
+		</template>
+	</UDashboardPanel>
 
-  <UDashboardPanel id="inbox-detail" class="hidden lg:flex">
-    <template #header>
-      <UDashboardNavbar title="Message" />
-    </template>
-    <template #body>
-      <!-- Email content -->
-    </template>
-  </UDashboardPanel>
+	<UDashboardPanel id="inbox-detail" class="hidden lg:flex">
+		<template #header>
+			<UDashboardNavbar title="Message" />
+		</template>
+		<template #body>
+			<!-- Email content -->
+		</template>
+	</UDashboardPanel>
 </template>
 ```
 
@@ -188,18 +191,18 @@ definePageMeta({ layout: 'dashboard' })
 
 ```vue [layouts/dashboard.vue]
 <template>
-  <UDashboardGroup>
-    <UDashboardSidebar>
-      <template #header>
-        <UDashboardSearchButton />
-      </template>
-      <!-- ... -->
-    </UDashboardSidebar>
+	<UDashboardGroup>
+		<UDashboardSidebar>
+			<template #header>
+				<UDashboardSearchButton />
+			</template>
+			<!-- ... -->
+		</UDashboardSidebar>
 
-    <slot />
+		<slot />
 
-    <UDashboardSearch :groups="searchGroups" />
-  </UDashboardGroup>
+		<UDashboardSearch :groups="searchGroups" />
+	</UDashboardGroup>
 </template>
 ```
 

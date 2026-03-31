@@ -1,4 +1,5 @@
-import { fromGeoPolygonToBoundary, type Boundary } from "./lot-parser";
+import { fromGeoPolygonToBoundary } from "./lot-parser";
+import type { Boundary } from "./lot-parser";
 
 export type BoundarySample = {
 	id: number;

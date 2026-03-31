@@ -109,7 +109,10 @@ function findClosingBoundaryVector(x: number, y: number) {
 	const minuteStep = Math.PI / (180 * 60);
 	for (let angleOffset = -2; angleOffset <= 2; angleOffset++) {
 		for (let distanceOffset = -2; distanceOffset <= 2; distanceOffset++) {
-			const candidate = toBoundaryVector(targetRadians + angleOffset * minuteStep, targetDistance + distanceOffset / 100);
+			const candidate = toBoundaryVector(
+				targetRadians + angleOffset * minuteStep,
+				targetDistance + distanceOffset / 100,
+			);
 			const residual = Math.hypot(x + candidate.x, y + candidate.y);
 			if (residual < bestResidual) {
 				best = candidate;

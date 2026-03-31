@@ -24,46 +24,48 @@ UApp
 
 ```vue [app.vue]
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+	import type { NavigationMenuItem } from "@nuxt/ui";
 
-const route = useRoute()
+	const route = useRoute();
 
-const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
+	const { data: navigation } = await useAsyncData("navigation", () => queryCollectionNavigation("docs"));
 
-provide('navigation', navigation)
+	provide("navigation", navigation);
 
-const items = computed<NavigationMenuItem[]>(() => [{
-  label: 'Docs',
-  to: '/docs/getting-started',
-  active: route.path.startsWith('/docs')
-}])
+	const items = computed<NavigationMenuItem[]>(() => [
+		{
+			label: "Docs",
+			to: "/docs/getting-started",
+			active: route.path.startsWith("/docs"),
+		},
+	]);
 </script>
 
 <template>
-  <UApp>
-    <UHeader>
-      <template #title>
-        <Logo class="h-6 w-auto" />
-      </template>
+	<UApp>
+		<UHeader>
+			<template #title>
+				<Logo class="h-6 w-auto" />
+			</template>
 
-      <UNavigationMenu :items="items" />
+			<UNavigationMenu :items="items" />
 
-      <template #right>
-        <UContentSearchButton />
-        <UColorModeButton />
-      </template>
-    </UHeader>
+			<template #right>
+				<UContentSearchButton />
+				<UColorModeButton />
+			</template>
+		</UHeader>
 
-    <UMain>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
+		<UMain>
+			<NuxtLayout>
+				<NuxtPage />
+			</NuxtLayout>
+		</UMain>
 
-    <UFooter />
+		<UFooter />
 
-    <UContentSearch :navigation="navigation" />
-  </UApp>
+		<UContentSearch :navigation="navigation" />
+	</UApp>
 </template>
 ```
 
@@ -71,21 +73,21 @@ const items = computed<NavigationMenuItem[]>(() => [{
 
 ```vue [layouts/docs.vue]
 <script setup lang="ts">
-import type { ContentNavigationItem } from '@nuxt/content'
+	import type { ContentNavigationItem } from "@nuxt/content";
 
-const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
+	const navigation = inject<Ref<ContentNavigationItem[]>>("navigation");
 </script>
 
 <template>
-  <UPage>
-    <template #left>
-      <UPageAside>
-        <UContentNavigation :navigation="navigation" />
-      </UPageAside>
-    </template>
+	<UPage>
+		<template #left>
+			<UPageAside>
+				<UContentNavigation :navigation="navigation" />
+			</UPageAside>
+		</template>
 
-    <slot />
-  </UPage>
+		<slot />
+	</UPage>
 </template>
 ```
 
@@ -93,35 +95,35 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
 ```vue [pages/docs/[...slug].vue]
 <script setup lang="ts">
-const route = useRoute()
+	const route = useRoute();
 
-definePageMeta({ layout: 'docs' })
+	definePageMeta({ layout: "docs" });
 
-const { data: page } = await useAsyncData(route.path, () => {
-  return queryCollection('docs').path(route.path).first()
-})
+	const { data: page } = await useAsyncData(route.path, () => {
+		return queryCollection("docs").path(route.path).first();
+	});
 
-const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
-  return queryCollectionItemSurroundings('docs', route.path)
-})
+	const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
+		return queryCollectionItemSurroundings("docs", route.path);
+	});
 </script>
 
 <template>
-  <UPage>
-    <UPageHeader :title="page.title" :description="page.description" />
+	<UPage>
+		<UPageHeader :title="page.title" :description="page.description" />
 
-    <UPageBody>
-      <ContentRenderer :value="page" />
+		<UPageBody>
+			<ContentRenderer :value="page" />
 
-      <USeparator />
+			<USeparator />
 
-      <UContentSurround :surround="surround" />
-    </UPageBody>
+			<UContentSurround :surround="surround" />
+		</UPageBody>
 
-    <template #right>
-      <UContentToc :links="page.body.toc.links" />
-    </template>
-  </UPage>
+		<template #right>
+			<UContentToc :links="page.body.toc.links" />
+		</template>
+	</UPage>
 </template>
 ```
 

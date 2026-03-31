@@ -23,46 +23,45 @@ UApp
 
 ```vue [pages/editor.vue]
 <script setup lang="ts">
-const content = ref({
-  type: 'doc',
-  content: [
-    {
-      type: 'heading',
-      attrs: { level: 1 },
-      content: [{ type: 'text', text: 'Hello World' }]
-    },
-    {
-      type: 'paragraph',
-      content: [{ type: 'text', text: 'Start writing...' }]
-    }
-  ]
-})
+	const content = ref({
+		type: "doc",
+		content: [
+			{
+				type: "heading",
+				attrs: { level: 1 },
+				content: [{ type: "text", text: "Hello World" }],
+			},
+			{
+				type: "paragraph",
+				content: [{ type: "text", text: "Start writing..." }],
+			},
+		],
+	});
 </script>
 
 <template>
-  <UPage>
-    <UPageHeader title="Editor">
-      <template #actions>
-        <UButton label="Save" icon="i-lucide-save" />
-      </template>
-    </UPageHeader>
+	<UPage>
+		<UPageHeader title="Editor">
+			<template #actions>
+				<UButton label="Save" icon="i-lucide-save" />
+			</template>
+		</UPageHeader>
 
-    <UPageBody>
-      <UEditor v-slot="{ editor }" v-model="content">
-        <UEditorToolbar :editor="editor" />
-        <UEditorSuggestionMenu :editor="editor" />
-        <UEditorMentionMenu
-          :editor="editor"
-          :items="[
-            { label: 'Benjamin', avatar: { src: 'https://github.com/benjamincanac.png' } },
-            { label: 'Sébastien', avatar: { src: 'https://github.com/atinux.png' } }
-          ]"
-        />
-        <UEditorEmojiMenu :editor="editor" />
-        <UEditorDragHandle :editor="editor" />
-      </UEditor>
-    </UPageBody>
-  </UPage>
+		<UPageBody>
+			<UEditor v-slot="{ editor }" v-model="content">
+				<UEditorToolbar :editor="editor" />
+				<UEditorSuggestionMenu :editor="editor" />
+				<UEditorMentionMenu
+					:editor="editor"
+					:items="[
+						{ label: 'Benjamin', avatar: { src: 'https://github.com/benjamincanac.png' } },
+						{ label: 'Sébastien', avatar: { src: 'https://github.com/atinux.png' } },
+					]" />
+				<UEditorEmojiMenu :editor="editor" />
+				<UEditorDragHandle :editor="editor" />
+			</UEditor>
+		</UPageBody>
+	</UPage>
 </template>
 ```
 
@@ -115,54 +114,55 @@ Combine with Dashboard components for a multi-document editor with a sidebar.
 
 ```vue [layouts/editor.vue]
 <template>
-  <UDashboardGroup>
-    <UDashboardSidebar collapsible resizable>
-      <template #header>
-        <UButton icon="i-lucide-plus" label="New document" block />
-      </template>
+	<UDashboardGroup>
+		<UDashboardSidebar collapsible resizable>
+			<template #header>
+				<UButton icon="i-lucide-plus" label="New document" block />
+			</template>
 
-      <template #default>
-        <UNavigationMenu
-          :items="documents.map(doc => ({
-            label: doc.title,
-            to: `/editor/${doc.id}`,
-            icon: 'i-lucide-file-text'
-          }))"
-          orientation="vertical"
-        />
-      </template>
-    </UDashboardSidebar>
+			<template #default>
+				<UNavigationMenu
+					:items="
+						documents.map((doc) => ({
+							label: doc.title,
+							to: `/editor/${doc.id}`,
+							icon: 'i-lucide-file-text',
+						}))
+					"
+					orientation="vertical" />
+			</template>
+		</UDashboardSidebar>
 
-    <slot />
-  </UDashboardGroup>
+		<slot />
+	</UDashboardGroup>
 </template>
 ```
 
 ```vue [pages/editor/[id].vue]
 <script setup lang="ts">
-definePageMeta({ layout: 'editor' })
+	definePageMeta({ layout: "editor" });
 
-const content = ref({ type: 'doc', content: [] })
+	const content = ref({ type: "doc", content: [] });
 </script>
 
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Editor">
-        <template #right>
-          <UButton label="Save" icon="i-lucide-save" />
-        </template>
-      </UDashboardNavbar>
-    </template>
+	<UDashboardPanel>
+		<template #header>
+			<UDashboardNavbar title="Editor">
+				<template #right>
+					<UButton label="Save" icon="i-lucide-save" />
+				</template>
+			</UDashboardNavbar>
+		</template>
 
-    <UContainer class="py-8">
-      <UEditor v-slot="{ editor }" v-model="content">
-        <UEditorToolbar :editor="editor" />
-        <UEditorSuggestionMenu :editor="editor" />
-        <UEditorEmojiMenu :editor="editor" />
-        <UEditorDragHandle :editor="editor" />
-      </UEditor>
-    </UContainer>
-  </UDashboardPanel>
+		<UContainer class="py-8">
+			<UEditor v-slot="{ editor }" v-model="content">
+				<UEditorToolbar :editor="editor" />
+				<UEditorSuggestionMenu :editor="editor" />
+				<UEditorEmojiMenu :editor="editor" />
+				<UEditorDragHandle :editor="editor" />
+			</UEditor>
+		</UContainer>
+	</UDashboardPanel>
 </template>
 ```

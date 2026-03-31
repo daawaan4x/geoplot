@@ -1,8 +1,8 @@
 import { mockComponent, mountSuspended } from "@nuxt/test-utils/runtime";
 import { boundarySamples } from "~/shared/boundary-samples";
 import { fromBoundaryToDescription } from "~/shared/lot-parser";
-import { defineComponent, h } from "vue";
 import { describe, expect, it } from "vitest";
+import { defineComponent, h } from "vue";
 import { createHomePageDriver } from "../../support/page-objects/home-page";
 
 mockComponent(
@@ -50,27 +50,27 @@ mockComponent(
 					h(
 						"button",
 						{
-							type: "button",
+							"type": "button",
 							"data-testid": "editor-update",
-							onClick: () => emit("update:modelValue", "MANUAL EDIT"),
+							"onClick": () => emit("update:modelValue", "MANUAL EDIT"),
 						},
 						"edit",
 					),
 					h(
 						"button",
 						{
-							type: "button",
+							"type": "button",
 							"data-testid": "editor-boundary",
-							onClick: () => emit("boundary", [{ id: 1 }, { id: 2 }]),
+							"onClick": () => emit("boundary", [{ id: 1 }, { id: 2 }]),
 						},
 						"boundary",
 					),
 					h(
 						"button",
 						{
-							type: "button",
+							"type": "button",
 							"data-testid": "editor-range",
-							onClick: () => emit("active-line-range", { start: 2, end: 3 }),
+							"onClick": () => emit("active-line-range", { start: 2, end: 3 }),
 						},
 						"range",
 					),
@@ -99,11 +99,11 @@ mockComponent(
 				h(
 					"button",
 					{
-						type: "button",
+						"type": "button",
 						"data-testid": "sample-tile",
 						"data-sample-id": String((props.sample as { id: number }).id),
 						"data-load": props.load,
-						onClick: () => emit("load", props.sample),
+						"onClick": () => emit("load", props.sample),
 					},
 					(props.sample as { title: string }).title,
 				);
