@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 	defineEmits<{
-		(event: "zoom-in"): void;
-		(event: "zoom-out"): void;
+		(event: "zoom-in" | "zoom-out"): void;
 	}>();
 </script>

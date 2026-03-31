@@ -1,12 +1,7 @@
-import { describe, expect, it } from "vitest";
 import { createZoomController } from "~/components/lot-visualizer/panzoom/zoom-controller";
+import { describe, expect, it } from "vitest";
 
-function createFixture({
-	zoom = 1,
-	longerSide = 800,
-	minEdgeMagnitude = 100,
-	minEdgeDistance = 100,
-} = {}) {
+function createFixture({ zoom = 1, longerSide = 800, minEdgeMagnitude = 100, minEdgeDistance = 100 } = {}) {
 	const props = {
 		minEdge: {
 			magnitude: minEdgeMagnitude,
