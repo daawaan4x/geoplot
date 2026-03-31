@@ -3,7 +3,7 @@
 		<nav class="flex w-full flex-row items-center bg-[var(--ui-bg-inverted)]">
 			<h1 class="flex flex-row px-4 py-3 text-3xl font-extrabold tracking-tight text-white">geoplot</h1>
 			<blockquote class="flex flex-row items-center gap-2 text-xs opacity-90">
-				<p class="text-[var(--ui-text-inverted)]">by <i> Theone Genesis Eclarin </i></p>
+				<p class="hidden text-[var(--ui-text-inverted)] sm:block">by <i> Theone Genesis Eclarin </i></p>
 				<div>
 					<a href="https://github.com/daawaan4x">
 						<img
@@ -15,8 +15,8 @@
 			</blockquote>
 		</nav>
 		<main
-			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_10.75rem] gap-4 overflow-hidden p-8 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-[minmax(0,1fr)]">
-			<section class="grid min-h-0 gap-4 lg:grid-cols-2">
+			class="grid w-full grow grid-cols-1 grid-rows-[minmax(0,1fr)_8.75rem] gap-0 overflow-hidden p-0 sm:gap-4 sm:p-8 lg:grid-cols-[minmax(0,1fr)_10.75rem] lg:grid-rows-1">
+			<section class="grid min-h-0 grid-cols-1 grid-rows-2 gap-0 sm:gap-4 lg:grid-cols-2 lg:grid-rows-1">
 				<LotVisualizer :boundary="boundary" :active-vector-range="activeLineRange" />
 				<LotEditor
 					:model-value="editorText"
@@ -25,9 +25,9 @@
 					@active-line-range="(value) => (activeLineRange = value)" />
 			</section>
 
-			<aside class="flex min-h-0 flex-col rounded-lg bg-white lg:overflow-hidden">
+			<aside class="flex min-h-0 flex-col bg-white lg:overflow-hidden">
 				<div
-					class="flex min-h-0 gap-2 overflow-x-auto pb-1 lg:flex-1 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto lg:pb-0">
+					class="flex min-h-0 gap-0 overflow-x-auto sm:gap-2 lg:flex-1 lg:flex-col lg:overflow-x-hidden lg:overflow-y-auto">
 					<BoundarySampleRailTile
 						v-for="sample in boundarySamples"
 						:key="sample.id"

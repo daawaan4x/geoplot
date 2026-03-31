@@ -1,6 +1,6 @@
 <template>
 	<article
-		class="group/sample relative aspect-square h-full w-full overflow-hidden rounded-lg border-2 border-[#d3dae4] bg-white transition-colors focus-within:border-[#b8c4d4] hover:border-[#b8c4d4]">
+		class="group/sample relative aspect-square overflow-hidden rounded-none border-1 border-[#d3dae4] bg-white transition-colors focus-within:border-[#b8c4d4] hover:border-[#b8c4d4] sm:rounded-lg sm:border-2">
 		<button
 			type="button"
 			class="absolute inset-0 z-20 outline-none focus-visible:ring-2 focus-visible:ring-[#9fb3cf]"
