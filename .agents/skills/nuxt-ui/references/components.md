@@ -119,6 +119,7 @@ With Valibot:
 ```vue
 <script setup>
 
+
 	const files = ref<File[]>([])
 </script>
 
