@@ -53,7 +53,7 @@ export const usePanzoom = (target: HTMLElement) => {
 	} as PanzoomComputes;
 
 	useEventResize(target, props);
-	useEventDrag(target, props);
+	useEventDrag(target, props, computes);
 	useEventZoom(target, props, computes);
 	const ticker = EventTick(props, computes);
 

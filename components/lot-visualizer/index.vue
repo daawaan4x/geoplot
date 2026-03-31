@@ -3,7 +3,7 @@
 		<div
 			ref="containerRef"
 			class="relative h-full w-full overflow-hidden rounded-none border-1 border-[#d3dae4] sm:rounded-lg sm:border-2">
-			<canvas ref="canvasRef" class="cursor-grab! active:cursor-grabbing!"></canvas>
+			<canvas ref="canvasRef" class="cursor-grab! touch-none active:cursor-grabbing!"></canvas>
 			<canvas
 				ref="minimapRef"
 				class="absolute right-4 bottom-4 h-[25%] w-[25%] cursor-move! touch-none rounded-md border-2 border-[#d3dae4]"></canvas>
