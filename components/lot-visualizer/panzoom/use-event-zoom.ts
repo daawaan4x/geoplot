@@ -17,7 +17,7 @@ export function useEventZoom(target: HTMLElement, props: PanzoomProps, computes:
 		const diffY = () => ev.offsetY - computes.translate().target.y;
 
 		const longerSide = Math.max(size.x, size.y);
-		const maxZoom = (longerSide * 0.2) / props.minEdge.magnitude;
+		const maxZoom = (longerSide * 0.25) / props.minEdge.magnitude;
 
 		if (deltaZoom > 0) {
 			for (let i = 0; i < deltaZoom; i++) {
