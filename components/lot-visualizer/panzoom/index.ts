@@ -5,11 +5,13 @@ import type { PanzoomComputes, PanzoomProps } from "./types";
 import { useEventDrag } from "./use-event-drag";
 import { useEventResize } from "./use-event-resize";
 import { useEventZoom } from "./use-event-zoom";
+import { createZoomController } from "./zoom-controller";
 
 export type PanzoomView = PanzoomComputes &
 	Readonly<{
 		init(app: Application): void;
 		panTo(x: number, y: number): void;
+		zoomByStep(direction: 1 | -1): void;
 		setBBox({ min, max }: { min: { x: number; y: number }; max: { x: number; y: number } }): void;
 		setMinEdge(magnitude: number, distance: number): void;
 		reset(): void;
@@ -53,8 +55,9 @@ export const usePanzoom = (target: HTMLElement) => {
 	} as PanzoomComputes;
 
 	useEventResize(target, props);
-	useEventDrag(target, props);
-	useEventZoom(target, props, computes);
+	const zoomController = createZoomController(props, computes);
+	useEventDrag(target, props, zoomController);
+	useEventZoom(target, zoomController);
 	const ticker = EventTick(props, computes);
 
 	return {
@@ -92,6 +95,9 @@ export const usePanzoom = (target: HTMLElement) => {
 		setMinEdge: (magnitude, distance) => {
 			props.minEdge.magnitude = magnitude;
 			props.minEdge.distance = distance;
+		},
+		zoomByStep: (direction) => {
+			zoomController.zoomByStep(direction);
 		},
 	} as PanzoomView;
 };

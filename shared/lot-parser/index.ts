@@ -1,3 +1,6 @@
+import geoBearing from "@turf/bearing";
+import geoDestination from "@turf/destination";
+import geoDistance from "@turf/distance";
 import type { Direction, Quadrant } from "./bearing";
 import { Bearing } from "./bearing";
 import type { Boundary } from "./boundary";
@@ -91,6 +94,60 @@ function parseBoundaryVector(tokens: RegExpExecArray) {
 	return new BoundaryVector(bearing, distance);
 }
 
+function toBoundaryVector(radians: number, distance: number) {
+	const tokens = pattern.exec(toDescription(radians, distance));
+	if (!tokens) throw new Error("Cannot serialize input as a boundary vector");
+	return parseBoundaryVector(tokens);
+}
+
+/**
+ * Finds a representable closing vector for the residual offset left by the
+ * already-quantized boundary vectors.
+ *
+ * The input `x`/`y` is the current Cartesian displacement from the reference
+ * point after earlier segments have already been rounded into boundary vectors.
+ * This function first computes the ideal closing direction and length back to
+ * the origin, then searches a small neighborhood of nearby bearings and
+ * distances that can survive `toBoundaryVector()` serialization. The candidate
+ * whose rounded vector leaves the smallest remaining closure residual is used
+ * as the final edge.
+ */
+function findClosingBoundaryVector(x: number, y: number) {
+	// Point from the current accumulated offset back toward the reference point.
+	const targetRadians = Math.atan2(-y, -x);
+	// Use the remaining displacement magnitude as the ideal closing distance.
+	const targetDistance = Math.hypot(x, y);
+	// Start with the direct rounded version of that ideal closing vector.
+	let best = toBoundaryVector(targetRadians, targetDistance);
+	// Measure how much offset would remain after applying the rounded closing vector.
+	let bestResidual = Math.hypot(x + best.x, y + best.y);
+
+	const minuteStep = Math.PI / (180 * 60);
+
+	// Search nearby representable bearings within +/- 2 minutes.
+	for (let angleOffset = -2; angleOffset <= 2; angleOffset++) {
+		// Search nearby representable distances within +/- 0.02 m.
+		for (let distanceOffset = -2; distanceOffset <= 2; distanceOffset++) {
+			// Round each nearby ideal vector through the same boundary serialization path.
+			const candidate = toBoundaryVector(
+				targetRadians + angleOffset * minuteStep,
+				targetDistance + distanceOffset / 100,
+			);
+
+			// Compute the leftover closure error if this rounded candidate were used.
+			const residual = Math.hypot(x + candidate.x, y + candidate.y);
+
+			// Keep the candidate that closes the polygon most tightly after rounding.
+			if (residual < bestResidual) {
+				best = candidate;
+				bestResidual = residual;
+			}
+		}
+	}
+
+	return best;
+}
+
 export function parseDescription(rawInput: string, params: { ref: [number, number] }) {
 	const inputs = rawInput
 		.trim()
@@ -125,4 +182,78 @@ export function parseDescription(rawInput: string, params: { ref: [number, numbe
 	}
 
 	return results;
+}
+
+export function fromBoundaryToDescription(boundary: Boundary) {
+	return boundary.map((vector) => toDescription(vector.bearing.angle.radians, vector.distance)).join("\n");
+}
+
+/**
+ * Converts a geographic polygon into the boundary-vector format used by the parser.
+ *
+ * Each non-closing side is measured from the current `start` coordinate, then
+ * passed through `toBoundaryVector()`, which snaps the segment to the same
+ * serialized precision the textual boundary format supports. After that, the
+ * next `start` is not the raw polygon vertex, but the geodesic destination
+ * implied by the rounded vector itself.
+ *
+ * This means later sides are measured from the already-quantized path, so the
+ * function stays consistent with earlier rounding instead of repeatedly measuring
+ * from the original polygon vertices. It does not optimize each side
+ * incrementally; explicit closure correction is deferred to the last edge, where
+ * `findClosingBoundaryVector()` searches nearby representable vectors and picks
+ * the one with the smallest remaining closure error in Cartesian `x`/`y` space.
+ */
+export function fromGeoPolygonToBoundary(points: [number, number][]) {
+	const count = points.length;
+	if (count < 2) return [];
+
+	// Use the first coordinate as the reference point, and ignore a duplicated closing vertex.
+	const ref = points[0]!;
+	let boundaryCount = count;
+	const lastPoint = points[count - 1]!;
+	if (count > 2 && lastPoint[0] === ref[0] && lastPoint[1] === ref[1]) {
+		boundaryCount--;
+	}
+
+	if (boundaryCount < 2) return [];
+
+	// Track the rounded boundary plus the accumulated Cartesian offset it produces.
+	const boundary = new Array<BoundaryVector>(boundaryCount);
+	let start = ref;
+	let x = 0;
+	let y = 0;
+
+	// Convert each side in order, leaving the final side to explicitly close the rounded path.
+	for (let index = 0; index < boundaryCount; index++) {
+		// For the closing side, target the reference point; otherwise use the next polygon vertex.
+		const target = index === boundaryCount - 1 ? ref : points[index + 1]!;
+		let vector: BoundaryVector;
+
+		if (index === boundaryCount - 1) {
+			// Choose the last vector from the remaining rounded offset, minimizing final closure error.
+			vector = findClosingBoundaryVector(x, y);
+		} else {
+			// Turf returns a geographic bearing clockwise from north; convert it to this module's math angle.
+			const degrees = ((90 - geoBearing(start, target) + 540) % 360) - 180;
+			// Convert the normalized angle to radians for `toBoundaryVector()`.
+			const radians = (degrees / 180) * Math.PI;
+			// Quantize the raw geodesic segment into the parser's boundary-vector representation.
+			vector = toBoundaryVector(radians, geoDistance(start, target, { units: "meters" }));
+		}
+
+		// Accumulate the rounded segment so the closing search sees the actual residual offset.
+		boundary[index] = vector;
+		x += vector.x;
+		y += vector.y;
+
+		// Advance from the rounded vector so later measurements follow the quantized path.
+		const transformedBearing = ((-vector.bearing.angle.degrees - 90 + 720) % 360) - 180;
+		// Reproject that rounded segment geodesically to obtain the next measurement origin.
+		start = geoDestination(start, vector.distance, transformedBearing, {
+			units: "meters",
+		}).geometry.coordinates as [number, number];
+	}
+
+	return boundary as Boundary;
 }

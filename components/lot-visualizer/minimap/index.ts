@@ -1,7 +1,11 @@
+import { parseDescription } from "~/shared/lot-parser";
+import type { Boundary } from "~/shared/lot-parser";
 import type { Application } from "pixi.js";
 import type { Arrow, ArrowData } from "../arrows";
+import { ArrowData as ArrowDataStore } from "../arrows";
 import type { PanzoomView } from "../panzoom";
 import { LerpVector, Vector } from "../primitives";
+import { useArrows } from "../use-arrows";
 import { MiniArrows } from "./canvas-objects/mini-arrows";
 import { Viewbox } from "./canvas-objects/viewbox";
 import { EventTick } from "./event-tick";
@@ -26,13 +30,19 @@ type MinimapView = Readonly<{
 		}>;
 	}>;
 	init(app: Application): void;
+	destroy(): void;
 }>;
 
 export function useMinimap(
 	parent: HTMLElement,
 	canvas: HTMLCanvasElement,
-	panzoomView: PanzoomView,
+	panzoomView: PanzoomView | undefined,
 	arrowData: ArrowData,
+	options?: {
+		onResize?: (size: { x: number; y: number }) => void;
+		sizeScale?: number;
+		drawScale?: number;
+	},
 ) {
 	const buffer = document.createElement("canvas");
 	const canvases = [canvas, buffer];
@@ -47,7 +57,9 @@ export function useMinimap(
 	const bufferContext = buffer.getContext("2d")!;
 	const refreshBuffer = (arrows?: Arrow[]) => {
 		if (arrows) cachedArrows = arrows;
-		MiniArrows(bufferContext, cachedArrows);
+		MiniArrows(bufferContext, cachedArrows, {
+			scale: options?.drawScale ?? options?.sizeScale,
+		});
 	};
 	arrowData.onReset((arrows) => refreshBuffer(arrows));
 
@@ -59,25 +71,34 @@ export function useMinimap(
 		canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 		canvasContext.fillStyle = "rgba(255, 255, 255, 0.75)";
 		canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-		Viewbox(canvasContext, panzoomView, props);
+
+		if (panzoomView) Viewbox(canvasContext, panzoomView, props);
+
 		canvasContext.restore();
 		canvasContext.drawImage(buffer, 0, 0);
 	};
 
-	useEventResize(parent, canvases, props, () => {
-		if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
-			const scale = 2 * devicePixelRatio;
-			canvas.width = buffer.width = scale * canvas.clientWidth;
-			canvas.height = buffer.height = scale * canvas.clientHeight;
-		}
+	const cleanupResize = useEventResize(
+		parent,
+		canvases,
+		props,
+		() => {
+			if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+				const scale = 2 * devicePixelRatio;
+				canvas.width = buffer.width = scale * canvas.clientWidth;
+				canvas.height = buffer.height = scale * canvas.clientHeight;
+			}
 
-		refreshBuffer();
-		redraw();
-	});
+			refreshBuffer();
+			redraw();
+			options?.onResize?.({ x: props.size.x, y: props.size.y });
+		},
+		options?.sizeScale,
+	);
 
-	useEventDrag(canvas, panzoomView, props);
+	if (panzoomView) useEventDrag(canvas, panzoomView, props);
 
-	const ticker = EventTick(panzoomView, props, () => redraw());
+	const ticker = panzoomView ? EventTick(panzoomView, props, () => redraw()) : undefined;
 
 	return {
 		locked: () => props.locked,
@@ -96,7 +117,31 @@ export function useMinimap(
 			},
 		},
 		init(app) {
-			app.ticker.add((t) => ticker(t.deltaTime));
+			app.ticker.add((t) => ticker?.(t.deltaTime));
+		},
+		destroy() {
+			cleanupResize();
 		},
 	} as MinimapView;
+}
+
+export function renderStaticMinimap(parent: HTMLElement, canvas: HTMLCanvasElement, boundary: Boundary) {
+	const arrowData = new ArrowDataStore();
+
+	const minimap = useMinimap(parent, canvas, undefined, arrowData, {
+		sizeScale: 1,
+		drawScale: 1,
+		onResize: ({ x, y }) => {
+			const arrows = useArrows({
+				size: 0.8 * Math.min(x, y),
+				boundary,
+				activeVectorRange: { start: -1, end: -1 },
+			});
+			if (arrows) arrowData.set(arrows);
+		},
+	});
+
+	return () => {
+		minimap.destroy();
+	};
 }

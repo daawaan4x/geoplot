@@ -1,18 +1,21 @@
 <template>
-	<div class="relative flex h-full w-full flex-col rounded-lg border-2 border-[#d3dae4]">
+	<div class="relative flex h-full w-full flex-col rounded-none border-1 border-[#d3dae4] sm:rounded-lg sm:border-2">
 		<div class="flex h-auto w-full flex-row items-center px-4 py-3">
 			<span class="text-xs"> BOUNDARY EDITOR </span>
 			<Icon name="lucide:info" class="text-muted mr-1 ml-3" />
-			<span class="text-muted text-xs"> Visualize technical descriptions of lots/surveys. </span>
+			<span class="text-muted hidden text-xs sm:inline"> Visualize technical descriptions of lots/surveys. </span>
+			<span class="text-muted inline text-xs sm:hidden"> Visualize technical lots/surveys. </span>
 		</div>
 
 		<!-- Editor -->
 		<div ref="containerRef" class="text-md w-full grow border-t border-b border-[#ddd] text-base"></div>
 
-		<div class="h-auto w-full p-4 text-sm">
+		<div class="h-auto w-full p-4 text-xs sm:text-sm">
 			<!-- Area-->
 			<span v-if="area">
-				Area ≈
+				<span class="hidden sm:inline">Area</span>
+				<span class="inline sm:hidden">A</span>
+				≈
 				<span class="rounded border border-[#ccc] px-1 py-0.5 font-mono font-bold">
 					{{ (area ?? 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }} m²</span
 				>
@@ -26,7 +29,9 @@
 
 			<!-- Deviation -->
 			<span v-if="deviation" :class="{ 'text-error': errorMessage }">
-				Deviation of endpoints ≈
+				<span class="hidden sm:inline">Deviation of endpoints</span>
+				<span class="inline sm:hidden">Deviation</span>
+				≈
 				<span class="rounded border border-[#ccc] px-1 py-0.5 font-mono font-bold">
 					{{ deviation }}
 				</span>
@@ -50,34 +55,41 @@
 	import { parseDescription, ParserError, ValidationError } from "~/shared/lot-parser";
 	import type { Boundary } from "~/shared/lot-parser";
 	import { basicSetup, EditorView } from "codemirror";
-	import { onMounted, ref } from "vue";
+	import { onMounted, onUnmounted, ref, watch } from "vue";
 
 	const props = withDefaults(
 		defineProps<{
-			template?: string;
+			modelValue?: string;
 		}>(),
 		{
-			template: "",
+			modelValue: "",
 		},
 	);
 
 	const emits = defineEmits<{
+		(event: "update:modelValue", value: string): void;
 		(event: "boundary", value: Boundary): void;
 		(event: "active-line-range", value: { start: number; end: number }): void;
 	}>();
 
-	const containerRef = ref<HTMLTextAreaElement>();
-	const content = ref<string>(props.template);
+	const containerRef = ref<HTMLDivElement>();
+	const content = ref<string>(props.modelValue);
 	const area = ref<number>();
 	const deviation = ref<string>();
 	const errorLineNumber = ref<number>(-1);
 	const errorMessage = ref<string>();
+	const viewRef = ref<EditorView>();
+
+	let syncingFromParent = false;
 
 	onMounted(() => {
 		const container = containerRef.value!;
 
 		const listener = EditorView.updateListener.of((update) => {
-			if (update.docChanged) content.value = update.state.doc.toString();
+			if (update.docChanged) {
+				content.value = update.state.doc.toString();
+				if (!syncingFromParent) emits("update:modelValue", content.value);
+			}
 			if (update.selectionSet) {
 				const range = update.state.selection.ranges[0];
 				emits("active-line-range", {
@@ -93,9 +105,15 @@
 			extensions: [basicSetup, listener],
 		});
 
+		viewRef.value = view;
+
 		watchImmediate([content], ([content]) => {
 			if (!content) {
 				emits("boundary", []);
+				area.value = undefined;
+				deviation.value = undefined;
+				errorLineNumber.value = -1;
+				errorMessage.value = undefined;
 				return;
 			}
 
@@ -126,6 +144,38 @@
 			}
 		});
 	});
+
+	onUnmounted(() => viewRef.value?.destroy());
+
+	watch(
+		() => props.modelValue,
+		(value) => {
+			content.value = value;
+			const view = viewRef.value;
+			if (!view) return;
+
+			const current = view.state.doc.toString();
+			if (value === current) return;
+
+			const { main } = view.state.selection;
+			const nextAnchor = Math.min(main.anchor, value.length);
+			const nextHead = Math.min(main.head, value.length);
+
+			syncingFromParent = true;
+			view.dispatch({
+				changes: {
+					from: 0,
+					to: current.length,
+					insert: value,
+				},
+				selection: {
+					anchor: nextAnchor,
+					head: nextHead,
+				},
+			});
+			syncingFromParent = false;
+		},
+	);
 </script>
 
 <style scoped>
