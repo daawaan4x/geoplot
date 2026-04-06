@@ -3,7 +3,9 @@
 A website for visualizing technical descriptions of lots/surveys.
 
 <div align="center">
+	<kbd>
 	<img height="320" src="static/geoplot-demo-480p-24fps.gif"/>
+	</kbd>
 </div>
 
 ## Setup
